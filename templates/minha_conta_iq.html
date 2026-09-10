@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Minha Conta IQ Option — SMC BLACKBOX</title>
+<style>
+  :root{ --bg:#0a0e17; --panel:#0f131c; --panel2:#141a26; --border:#232a38;
+         --cyan:#22d3ee; --yellow:#facc15; --green:#26a69a; --red:#ef5350; --muted:#5a627a; --muted2:#9aa4ba; }
+  *{box-sizing:border-box}
+  body{margin:0;padding:16px;background:var(--bg);color:#e8ecf1;font-family:'JetBrains Mono',monospace;
+       min-height:100vh;display:flex;align-items:center;justify-content:center}
+  .card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px}
+  h1{font-size:16px;color:var(--cyan);margin:0 0 4px;text-align:center}
+  .sub{font-size:11px;color:var(--muted2);text-align:center;margin-bottom:20px}
+  label{display:block;font-size:10px;color:var(--muted2);margin:14px 0 5px;letter-spacing:.05em}
+  input[type=email], input[type=password], input[type=text]{
+    width:100%;padding:10px 12px;background:var(--panel2);border:1px solid var(--border);
+    border-radius:8px;color:#fff;font-family:inherit;font-size:13px}
+  input:focus{outline:none;border-color:var(--cyan)}
+  .tipo-conta{display:flex;gap:8px;margin-top:6px}
+  .tipo-conta label{display:flex;align-items:center;gap:6px;margin:0;padding:8px 12px;
+    background:var(--panel2);border:1px solid var(--border);border-radius:8px;font-size:11px;cursor:pointer;flex:1}
+  .tipo-conta input{width:auto;margin:0}
+  button{width:100%;margin-top:20px;padding:12px;background:var(--cyan);color:#00131a;border:none;
+    border-radius:8px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:.04em}
+  button:hover{filter:brightness(1.08)}
+  .flash{background:rgba(250,204,21,0.12);border:1px solid var(--yellow);color:var(--yellow);
+    border-radius:8px;padding:10px 12px;font-size:11.5px;margin-bottom:14px}
+  .status{font-size:11px;padding:8px 10px;border-radius:8px;margin-bottom:16px}
+  .status.cadastrada{background:rgba(38,166,154,0.12);border:1px solid var(--green);color:var(--green)}
+  .status.faltando{background:var(--panel2);border:1px solid var(--border);color:var(--muted2)}
+  .aviso{font-size:10px;color:var(--muted);margin-top:16px;line-height:1.5}
+  .voltar{display:block;text-align:center;margin-top:16px;color:var(--muted2);font-size:11px;text-decoration:none}
+  .voltar:hover{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>MINHA CONTA IQ OPTION</h1>
+  <p class="sub">Usada só pra suas próprias compras/vendas — separada da conta que carrega o gráfico</p>
+
+  {% with mensagens = get_flashed_messages() %}
+    {% if mensagens %}
+      {% for m in mensagens %}<div class="flash">{{ m }}</div>{% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if usuario.tem_conta_iq_cadastrada() %}
+    <div class="status cadastrada">✅ Conta cadastrada: {{ usuario.iq_email }} ({{ usuario.iq_conta_tipo or 'PRACTICE' }})</div>
+  {% else %}
+    <div class="status faltando">Nenhuma conta cadastrada ainda — sem isso, os botões de compra/venda não vão funcionar.</div>
+  {% endif %}
+
+  <form method="POST">
+    <label for="iq_email">EMAIL DA CONTA IQ OPTION</label>
+    <input type="email" id="iq_email" name="iq_email" value="{{ usuario.iq_email or '' }}" required autocomplete="off">
+
+    <label for="iq_senha">SENHA DA CONTA IQ OPTION</label>
+    <input type="password" id="iq_senha" name="iq_senha" placeholder="{{ '••••••••  (deixe em branco pra manter a atual)' if usuario.tem_conta_iq_cadastrada() else '' }}" autocomplete="off" {{ 'required' if not usuario.tem_conta_iq_cadastrada() else '' }}>
+
+    <label>TIPO DE CONTA</label>
+    <div class="tipo-conta">
+      <label><input type="radio" name="iq_conta_tipo" value="PRACTICE" {{ 'checked' if (usuario.iq_conta_tipo or 'PRACTICE')=='PRACTICE' else '' }}> Demo (treino)</label>
+      <label><input type="radio" name="iq_conta_tipo" value="REAL" {{ 'checked' if usuario.iq_conta_tipo=='REAL' else '' }}> Real (dinheiro de verdade)</label>
+    </div>
+
+    <button type="submit">Salvar conta IQ Option</button>
+  </form>
+
+  <p class="aviso">Sua senha fica criptografada no banco — ninguém, nem quem administra o servidor, consegue lê-la diretamente. Ela só é usada no momento de enviar uma ordem de compra/venda em seu nome.</p>
+
+  <a class="voltar" href="{{ url_for('home') }}">← Voltar pro gráfico</a>
+</div>
+</body>
+</html>
