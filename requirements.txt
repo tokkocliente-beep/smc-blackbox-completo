@@ -1,0 +1,12 @@
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Werkzeug==3.0.3
+cryptography==43.0.0
+psycopg2-binary==2.9.9
+gunicorn==22.0.0
+
+# iqoptionapi: mantém a MESMA linha que você já tinha no seu requirements.txt
+# atual (não sei qual fonte/versão exata você está usando, e não quero
+# arriscar trocar isso e quebrar o que já funciona). Só copia a linha do
+# projeto antigo pra cá.
